@@ -1,0 +1,8 @@
+ImmutableMultiDict([])
+<Request 'http://127.0.0.1:5000/search' [GET]>
+<Request 'http://127.0.0.1:5000/search' [GET]>
+b''
+b''
+<Request 'http://127.0.0.1:5000/search?$%7Bparams%7D' [GET]>
+<Request 'http://127.0.0.1:5000/search?$%7Bparams.toString()%7D' [GET]>
+<Request 'http://127.0.0.1:5000/search?q=alpha' [GET]>

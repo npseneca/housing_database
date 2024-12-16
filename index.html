@@ -180,9 +180,15 @@
         // Function to handle searching
         async function searchListings() {
             const query = document.getElementById("searchBox").value;
+
+            const params = new URLSearchParams({
+                q: query
+            });
         
             try {
-                const response = await fetch("http://127.0.0.1:5000/search");
+                const response = await fetch("http://127.0.0.1:5000/search?%s".replace('%s', params.toString()), {
+                    method: "GET"
+                });
                 if (response.ok) {
                     const listings = await response.json();
         
