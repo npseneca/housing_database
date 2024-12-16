@@ -5,6 +5,18 @@ from flask import request, jsonify
 from flask import send_from_directory
 from flask_cors import CORS
 
+import os
+
+with open('secrets.env') as f:
+    secrets = f.readlines()
+
+
+for secret in secrets:
+    name, password = secret.split('=')
+    name, password = name.strip(), password.strip()
+    os.environ[name] = password
+
+# print(os.environ)
 #replace with the right url, database, and collection
 myclient = pymongo.MongoClient("mongodb+srv://npseneca:xnPc5jSVrOoaur0t@cs452.gtgjg.mongodb.net/?retryWrites=true&w=majority&appName=cs452")
 mydb = myclient['testDB']
