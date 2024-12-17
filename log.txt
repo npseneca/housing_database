@@ -81,3 +81,7 @@ b''
 <Request 'http://127.0.0.1:5000/search?q=3+bedrooms,+within+40+miles+of+Lehi' [GET]>
 <Request 'http://127.0.0.1:5000/search?q=3+bedrooms,+within+70+miles+of+Lehi' [GET]>
 <Request 'http://127.0.0.1:5000/search?q=minimum+3+bedrooms,+within+70+miles+of+Lehi' [GET]>
+<Request 'http://127.0.0.1:5000/search?q=minimum+3+bedrooms,+within+50+miles+of+Lehi' [GET]>
+<Request 'http://127.0.0.1:5000/search?q=exactly+4+bedrooms,+with+a+high+school+rating+greater+than+2' [GET]>
+<Request 'http://127.0.0.1:5000/search?q=exactly+8+bedrooms' [GET]>
+<Request 'http://127.0.0.1:5000/search?q=only+1+bedroom' [GET]>

@@ -106,6 +106,10 @@
         form button:hover {
             background-color: #45a049;
         }
+
+        ul {
+            text-align: left
+        }
     </style>
 </head>
 <body>
@@ -119,7 +123,7 @@
             <h2>What are you looking for?</h2>
             <input type="text" id="searchBox" placeholder="Describe your ideal home">
             <button onclick="searchListings()">Search</button>
-            <div id="listings"></div>
+            <ul id="listings"></div>
         </div>
 
         <!-- List My Home Form -->
@@ -199,7 +203,7 @@
                         // Ensure the URL is absolute
                         const url = listing.detail_url.startsWith("http") ? listing.detail_url : `http://${listing.detail_url}`;
         
-                        const listingDiv = document.createElement("div");
+                        const listingDiv = document.createElement("li");
                         listingDiv.className = "listing";
                         listingDiv.innerHTML = `<a href="${url}" target="_blank">${listing.detail_url}</a>`;
                         listingsContainer.appendChild(listingDiv);
