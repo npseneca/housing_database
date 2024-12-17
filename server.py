@@ -6,6 +6,7 @@ from flask import send_from_directory
 from flask_cors import CORS
 
 import os
+import json
 
 from openai import OpenAI
 
@@ -62,11 +63,16 @@ def Search():
         q = request.args.get('q')
 
         q = getChatGptResponse(q)
-        
 
-        query = {"zipcode": 20131}
+        q = sanitizeForMongoQuery(q)
+
+        query = {}
+
+        query.update(q)
         
         results = mycul.find(query, {"_id": 0, "detail_url": 1}).limit(5)
+
+        print('found')
         
         listings = list(results)
         
@@ -76,7 +82,7 @@ def Search():
     
 # OpenAI helper functions
 def getChatGptResponse(content):
-    instructions = "Give me a MongoDB select statement that answers the question. Only respond with MongoDB syntax. If there is an error do not expalin it! Here's an example of the collection:\n" + TABLE
+    instructions = "Give me a MongoDB select statement that answers the query. Only respond a dictionary and double quotes around the field. If there is an error do not expalin it! Here's an example of the collection:\n" + TABLE
     content = instructions + content
     stream = openAiClient.chat.completions.create(
         model="gpt-4o-mini",
@@ -91,6 +97,42 @@ def getChatGptResponse(content):
 
     result = "".join(responseList)
     return result
+
+
+def sanitizeForMongoQuery(value):
+    """ Sample response
+    ```json
+    {"beds":2.0,"bathrooms":2.0}
+    ```
+    """
+    try:
+        # print(value.split())
+        if len(value) == 3:
+            q = value.split()[1]
+        else:
+            q = ''.join(value.split()[1:-1])
+        print(q)
+        # l_paren = value.index('{')
+        # r_paren = value.index('\n')
+
+        # Get the dictionary out of the query
+        # q = value[l_paren:r_paren+1]
+
+        value = json.loads(q)
+
+    except Exception as e:
+        print(e)
+
+    return value
+
+
+# def replaceWithQuotes(value):
+#     headers = 'detail_url,price,square_feet,beds,bathrooms,zipcode,year_built,days_on_market,elem_rating,middle_rating,hs_rating'.split(',')
+#     for header in headers:
+#         if header in value:
+#             value = value.replace(header, f'"{header}"')
+
+#     return value
 
 if __name__ == "__main__":
     app.run()
