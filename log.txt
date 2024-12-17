@@ -6,3 +6,6 @@ b''
 <Request 'http://127.0.0.1:5000/search?$%7Bparams%7D' [GET]>
 <Request 'http://127.0.0.1:5000/search?$%7Bparams.toString()%7D' [GET]>
 <Request 'http://127.0.0.1:5000/search?q=alpha' [GET]>
+<Request 'http://127.0.0.1:5000/search?q=alpha' [GET]>
+<Request 'http://127.0.0.1:5000/search?q=I+want+to+find+a+home+with+2+bed+and+2+baths' [GET]>
+<Request 'http://127.0.0.1:5000/search?q=I+want+to+find+a+home+with+2+bed+and+2+baths' [GET]>

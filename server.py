@@ -26,6 +26,14 @@ openAiClient = OpenAI(
     organization = os.environ.get("orgId")
 )
 
+
+# Database structure example
+
+# { "k_6_rating": "elem_rating", "7_9_rating": "middle_rating", "10_12_rating": "hs_rating" }
+TABLE = """detail_url,price,square_feet,beds,bathrooms,zipcode,year_built,days_on_market,elem_rating,middle_rating,hs_rating
+https://www.zillow.com/homedetails/843-S-Walker-Way-St-George-UT-84770/440360262_zpid/,558990.0,2340.0,3.0,3.0,84770,2024.0,49.0,-1,-1,4
+"""
+
 #replace with the right url, database, and collection
 myclient = pymongo.MongoClient("mongodb+srv://npseneca:xnPc5jSVrOoaur0t@cs452.gtgjg.mongodb.net/?retryWrites=true&w=majority&appName=cs452")
 mydb = myclient['testDB']
@@ -53,6 +61,7 @@ def Search():
             print(request, file=f)
         q = request.args.get('q')
 
+        q = getChatGptResponse(q)
         
 
         query = {"zipcode": 20131}
@@ -67,7 +76,8 @@ def Search():
     
 # OpenAI helper functions
 def getChatGptResponse(content):
-    instructions = commonSqlOnlyRequest = "Give me a MongoDB select statement that answers the question. Only respond with MongoDB syntax. If there is an error do not expalin it!"
+    instructions = "Give me a MongoDB select statement that answers the question. Only respond with MongoDB syntax. If there is an error do not expalin it! Here's an example of the collection:\n" + TABLE
+    content = instructions + content
     stream = openAiClient.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": content}],
