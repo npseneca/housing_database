@@ -30,15 +30,13 @@ openAiClient = OpenAI(
 
 # Database structure example
 
-# { "k_6_rating": "elem_rating", "7_9_rating": "middle_rating", "10_12_rating": "hs_rating" }
-TABLE = """detail_url,price,square_feet,beds,bathrooms,zipcode,year_built,days_on_market,elem_rating,middle_rating,hs_rating
-https://www.zillow.com/homedetails/843-S-Walker-Way-St-George-UT-84770/440360262_zpid/,558990.0,2340.0,3.0,3.0,84770,2024.0,49.0,-1,-1,4
+FIELDS = """detail_url,price,square_feet,beds,bathrooms,zipcode,year_built,days_on_market,elem_rating,middle_rating,hs_rating
 """
 
 #replace with the right url, database, and collection
-myclient = pymongo.MongoClient("mongodb+srv://npseneca:xnPc5jSVrOoaur0t@cs452.gtgjg.mongodb.net/?retryWrites=true&w=majority&appName=cs452")
-mydb = myclient['testDB']
-mycul = mydb['test']
+myclient = pymongo.MongoClient("mongodb+srv://smamos:KU5GeuKV44XbPBT@cs452.ptnf0.mongodb.net/?retryWrites=true&w=majority&appName=cs452")
+mydb = myclient['final_project']
+mycul = mydb['houses']
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -61,28 +59,32 @@ def Search():
         with open('log.txt', 'a') as f:
             print(request, file=f)
         q = request.args.get('q')
-
         q = getChatGptResponse(q)
-
         q = sanitizeForMongoQuery(q)
+        print("Sanitized: ", q)
 
         query = {}
-
         query.update(q)
         
         results = mycul.find(query, {"_id": 0, "detail_url": 1}).limit(5)
 
-        print('found')
-        
         listings = list(results)
+        print(listings)
         
         return jsonify(listings), 200
     except Exception as e:
-        return f"Error: {e}"
+        print(e)
+        return f"Error searching: {e}"
     
 # OpenAI helper functions
 def getChatGptResponse(content):
-    instructions = "Give me a MongoDB select statement that answers the query. Only respond a dictionary and double quotes around the field. If there is an error do not expalin it! Here's an example of the collection:\n" + TABLE
+    instructions = "Give me a MongoDB select statement in JSON format that answers the query. \
+    If there is an error do not explain it! \
+    Do not include comments. \
+    This collection does not have any indexes. \
+    Do not try to use geographic operations such as $near\
+    Only use fields in this list (all of which are type number, except detail_url):\n" + FIELDS
+
     content = instructions + content
     stream = openAiClient.chat.completions.create(
         model="gpt-4o-mini",
@@ -106,33 +108,16 @@ def sanitizeForMongoQuery(value):
     ```
     """
     try:
-        # print(value.split())
         if len(value) == 3:
             q = value.split()[1]
         else:
             q = ''.join(value.split()[1:-1])
-        print(q)
-        # l_paren = value.index('{')
-        # r_paren = value.index('\n')
-
-        # Get the dictionary out of the query
-        # q = value[l_paren:r_paren+1]
-
         value = json.loads(q)
 
     except Exception as e:
-        print(e)
+        print("Error sanitizing: ", e)
 
     return value
-
-
-# def replaceWithQuotes(value):
-#     headers = 'detail_url,price,square_feet,beds,bathrooms,zipcode,year_built,days_on_market,elem_rating,middle_rating,hs_rating'.split(',')
-#     for header in headers:
-#         if header in value:
-#             value = value.replace(header, f'"{header}"')
-
-#     return value
 
 if __name__ == "__main__":
     app.run()
