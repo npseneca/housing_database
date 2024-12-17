@@ -179,6 +179,9 @@
                 form.style.display = "none";
                 searchContainer.style.display = "block";
             }
+
+            const button = document.querySelector("header button");
+            button.innerText = button.innerText === "+ List My Home" ? "Back" : "+ List My Home";
         }
 
         // Function to handle searching
